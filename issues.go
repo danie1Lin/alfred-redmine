@@ -97,8 +97,9 @@ func (c IssuesCommand) Items(arg, data string) (items []alfred.Item, err error) 
 				})
 			}
 		}
-		if alfred.FuzzyMatches("Notes", parts[0]) {
-			if parts[0] == "Notes" {
+		if alfred.FuzzyMatches("notes:", parts[0]) {
+			if parts[0] == "Notes:" {
+				commentItems := []alfred.Item{}
 				for _, j := range issue.Journals {
 					if j.Notes == "" {
 						continue
@@ -112,13 +113,25 @@ func (c IssuesCommand) Items(arg, data string) (items []alfred.Item, err error) 
 								Data:    j.Notes,
 							},
 						}
-						items = append(items, item)
+						commentItems = append(commentItems, item)
 					}
+				}
+				if len(commentItems) > 0 {
+					items = append(items, commentItems...)
+				} else {
+					msg := "no previewable notes"
+					items = append(items, alfred.Item{
+						Title: msg,
+						Arg: &alfred.ItemArg{
+							Keyword: msg,
+							Mode:    alfred.ModeTell,
+						},
+					})
 				}
 			} else {
 				items = append(items, alfred.Item{
-					Title:        "Notes",
-					Autocomplete: "Notes",
+					Title:        "Notes: ",
+					Autocomplete: "Notes: ",
 				})
 			}
 		}
@@ -273,7 +286,7 @@ func createIssueItems(arg string, pid int, issues []Issue) (items []alfred.Item)
 }
 
 func getMyIssuesURL() string {
-	return path.Join(config.RedmineURL, "/issues?utf8=✓&set_filter=1"+
+	return path.Join(config.RedmineURL, "/issues?utf8=✓&set_filter=1&"+
 		"f[]=assigned_to_id&op[assigned_to_id]==&v[assigned_to_id][]=me&"+
 		"f[]=status_id&op[status_id]=o&f[]=&c[]=project&c[]=status&c[]=priority&c[]=subject&"+
 		"c[]=updated_on&c[]=due_date&c[]=estimated_hours&c[]=spent_hours&c[]=done_ratio&group_by=")

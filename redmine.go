@@ -212,8 +212,7 @@ func (session *Session) GetIssues() ([]Issue, error) {
 	params := map[string]string{
 		"assigned_to_id": "me",
 		//"watcher_id": "me",
-		"include": "journals",
-		"limit":   "100"}
+		"limit": "100"}
 	var issues []Issue
 	offset := 0
 
@@ -222,7 +221,6 @@ func (session *Session) GetIssues() ([]Issue, error) {
 		if err != nil {
 			return nil, err
 		}
-		dlog.Printf("data:", string(data))
 
 		var list struct {
 			Issues     []Issue `json:"issues"`
@@ -252,7 +250,6 @@ func (session *Session) GetIssues() ([]Issue, error) {
 		offset += len(issues)
 		params["offset"] = strconv.Itoa(offset)
 	}
-	dlog.Printf("GET ISSUE: %+v", issues)
 	return issues, nil
 }
 

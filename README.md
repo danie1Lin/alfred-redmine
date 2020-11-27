@@ -4,6 +4,11 @@ An Alfred workflow for accessing a Redmine server
 
 ![Screenshot](doc/main_menu.png)
 
+## New feature
+
+You can preview note and add notes to an issue
+![Screenshot](doc/preview_note.png)
+![Screenshot](doc/add_note.png)
 
 ## Installation
 
