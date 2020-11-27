@@ -69,6 +69,7 @@ type Issue struct {
 	Subject        string       `json:"subject,omitempty"`
 	Tracker        IDentifier   `json:"tracker,omitempty"`
 	UpdatedOn      string       `json:"updated_on,omitempty"`
+	Journals       []Journal    `json:"journals,omitempty"`
 }
 
 // UpdateIssue is used to pass updates to Redmine.
@@ -88,6 +89,7 @@ type UpdateIssue struct {
 	Subject        string  `json:"subject,omitempty"`
 	Tracker        int     `json:"tracker_id,omitempty"`
 	UpdatedOn      string  `json:"updated_on,omitempty"`
+	Notes          string  `json:"notes,omitempty"`
 }
 
 // IssueStatus represents one of the issue statuses configured in Redmine.
@@ -111,6 +113,11 @@ type TimeEntry struct {
 	Issue     struct {
 		ID int `json:"id"`
 	} `json:"issue"`
+}
+
+type Journal struct {
+	ID    int    `json:"id"`
+	Notes string `json:"notes"`
 }
 
 // An IDentifier is a name/id pair.
@@ -205,7 +212,8 @@ func (session *Session) GetIssues() ([]Issue, error) {
 	params := map[string]string{
 		"assigned_to_id": "me",
 		//"watcher_id": "me",
-		"limit": "100"}
+		"include": "journals",
+		"limit":   "100"}
 	var issues []Issue
 	offset := 0
 
@@ -214,6 +222,7 @@ func (session *Session) GetIssues() ([]Issue, error) {
 		if err != nil {
 			return nil, err
 		}
+		dlog.Printf("data:", string(data))
 
 		var list struct {
 			Issues     []Issue `json:"issues"`
@@ -228,6 +237,13 @@ func (session *Session) GetIssues() ([]Issue, error) {
 			return nil, err
 		}
 
+		for i := range list.Issues {
+			if issue, err := session.GetIssue(list.Issues[i].ID); err != nil {
+				return nil, err
+			} else {
+				list.Issues[i].Journals = issue.Journals
+			}
+		}
 		issues = append(issues, list.Issues...)
 		if len(issues) == list.TotalCount {
 			break
@@ -236,14 +252,14 @@ func (session *Session) GetIssues() ([]Issue, error) {
 		offset += len(issues)
 		params["offset"] = strconv.Itoa(offset)
 	}
-
+	dlog.Printf("GET ISSUE: %+v", issues)
 	return issues, nil
 }
 
 // GetIssue returns a specific issue.
 func (session *Session) GetIssue(id int) (issue Issue, err error) {
 	var data []byte
-	if data, err = session.get("/issues/"+strconv.Itoa(id)+".json", nil); err != nil {
+	if data, err = session.get("/issues/"+strconv.Itoa(id)+".json?include=journals", nil); err != nil {
 		return
 	}
 

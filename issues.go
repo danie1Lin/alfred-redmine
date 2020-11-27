@@ -97,6 +97,56 @@ func (c IssuesCommand) Items(arg, data string) (items []alfred.Item, err error) 
 				})
 			}
 		}
+		if alfred.FuzzyMatches("Notes", parts[0]) {
+			if parts[0] == "Notes" {
+				for _, j := range issue.Journals {
+					if j.Notes == "" {
+						continue
+					}
+					if len(parts) == 1 || alfred.FuzzyMatches(j.Notes, parts[1]) {
+						item := alfred.Item{
+							Title: j.Notes,
+							Arg: &alfred.ItemArg{
+								Keyword: j.Notes,
+								Mode:    alfred.ModeTell,
+								Data:    j.Notes,
+							},
+						}
+						items = append(items, item)
+					}
+				}
+			} else {
+				items = append(items, alfred.Item{
+					Title:        "Notes",
+					Autocomplete: "Notes",
+				})
+			}
+		}
+
+		var item alfred.Item
+		if arg == "" {
+			item = alfred.Item{
+				Title: "add notes:",
+				Arg: &alfred.ItemArg{
+					Keyword: issuesKeyword,
+					Mode:    alfred.ModeTell,
+				}}
+		} else {
+			item = alfred.Item{
+				Title: "add notes:" + arg,
+				Arg: &alfred.ItemArg{
+					Keyword: issuesKeyword,
+					Mode:    alfred.ModeDo,
+					Data: alfred.Stringify(&issueCfg{
+						ToUpdate: &updateIssueMessage{
+							ID:    issue.ID,
+							Issue: UpdateIssue{Notes: arg},
+						},
+					}),
+				},
+			}
+		}
+		items = append(items, item)
 	} else {
 		closed := getClosedStatusIDs()
 		var issues []Issue
