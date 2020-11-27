@@ -203,9 +203,9 @@ func (session *Session) GetUser() (user User, err error) {
 // GetIssues returns an array of all open issues assigned to the Session user.
 func (session *Session) GetIssues() ([]Issue, error) {
 	params := map[string]string{
-		// "assigned_to_id": "me",
-		"watcher_id": "me",
-		"limit":      "100"}
+		"assigned_to_id": "me",
+		//"watcher_id": "me",
+		"limit": "100"}
 	var issues []Issue
 	offset := 0
 

@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"os/exec"
+	"path"
 	"sort"
 	"strconv"
 	"time"
@@ -222,10 +223,10 @@ func createIssueItems(arg string, pid int, issues []Issue) (items []alfred.Item)
 }
 
 func getMyIssuesURL() string {
-	return config.RedmineURL + "/issues?utf8=✓&set_filter=1&" +
-		"f[]=assigned_to_id&op[assigned_to_id]==&v[assigned_to_id][]=me&" +
-		"f[]=status_id&op[status_id]=o&f[]=&c[]=project&c[]=status&c[]=priority&c[]=subject&" +
-		"c[]=updated_on&c[]=due_date&c[]=estimated_hours&c[]=spent_hours&c[]=done_ratio&group_by="
+	return path.Join(config.RedmineURL, "/issues?utf8=✓&set_filter=1"+
+		"f[]=assigned_to_id&op[assigned_to_id]==&v[assigned_to_id][]=me&"+
+		"f[]=status_id&op[status_id]=o&f[]=&c[]=project&c[]=status&c[]=priority&c[]=subject&"+
+		"c[]=updated_on&c[]=due_date&c[]=estimated_hours&c[]=spent_hours&c[]=done_ratio&group_by=")
 }
 
 func (i *Issue) toItem() (item alfred.Item) {
