@@ -139,14 +139,14 @@ func (c IssuesCommand) Items(arg, data string) (items []alfred.Item, err error) 
 		var item alfred.Item
 		if arg == "" {
 			item = alfred.Item{
-				Title: "add notes:",
+				Title: "Add notes:",
 				Arg: &alfred.ItemArg{
 					Keyword: issuesKeyword,
 					Mode:    alfred.ModeTell,
 				}}
 		} else {
 			item = alfred.Item{
-				Title: "add notes:" + arg,
+				Title: "Add notes:" + arg,
 				Arg: &alfred.ItemArg{
 					Keyword: issuesKeyword,
 					Mode:    alfred.ModeDo,
