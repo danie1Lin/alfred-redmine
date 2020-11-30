@@ -385,6 +385,20 @@ func (session *Session) GetIssueStatuses() ([]IssueStatus, error) {
 	return statuses.IssueStatuses, nil
 }
 
+func (session *Session) CreateIssue(issue Issue) (Issue, error) {
+	var result Issue
+	data, err := session.post("/issues.json", issue)
+	if err != nil {
+		return result, err
+	}
+
+	decoder := json.NewDecoder(bytes.NewReader(data))
+	if err := decoder.Decode(&result); err != nil {
+		return result, err
+	}
+	return result, nil
+}
+
 // support /////////////////////////////////////////////////////////////
 
 func toQueryString(params map[string]string) string {
